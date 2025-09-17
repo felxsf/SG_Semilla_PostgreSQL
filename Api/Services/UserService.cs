@@ -190,7 +190,42 @@ namespace Api.Services
                     return (false, "La cuenta está desactivada", null);
                 }
 
-                // Verificar contraseña local
+                // Si es un usuario LDAP, verificar siempre su estado en LDAP antes de permitir el acceso
+                if (user.IsLdapUser)
+                {
+                    try
+                    {
+                        var ldapResult = await _ldapService.AuthenticateAsync(loginDto.UsernameOrDocumentNumber, loginDto.Password);
+                        
+                        if (!ldapResult.Success)
+                        {
+                            // Si el usuario está desactivado en LDAP o hay otro problema, rechazar el acceso
+                            string errorMessage = "Autenticación LDAP fallida";
+                            
+                            if (ldapResult.Message == "DISABLEDACCOUNT")
+                            {
+                                // Actualizar el estado local para reflejar que está desactivado en LDAP
+                                user.IsActive = false;
+                                await _userRepository.UpdateAsync(user);
+                                errorMessage = "La cuenta ha sido desactivada en el directorio LDAP";
+                            }
+                            
+                            return (false, errorMessage, null);
+                        }
+                        
+                        // Autenticación LDAP exitosa, actualizar último login
+                        user.LastLogin = DateTime.UtcNow;
+                        await _userRepository.UpdateAsync(user);
+                        return (true, "Autenticación LDAP exitosa", MapToDto(user));
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error al verificar estado LDAP para usuario {Username}", user.Username);
+                        return (false, "Error al verificar estado en LDAP", null);
+                    }
+                }
+
+                // Para usuarios no-LDAP, verificar contraseña local
                 var passwordHash = HashPasswordWithSalt(loginDto.Password, user.Salt);
                 if (passwordHash == user.PasswordHash)
                 {
@@ -252,6 +287,13 @@ namespace Api.Services
                     {
                         case "DISABLEDACCOUNT":
                             errorMessage = "La cuenta LDAP está desactivada";
+                            // Si el usuario existe en la base de datos local, actualizar su estado
+                            if (user != null)
+                            {
+                                user.IsActive = false;
+                                await _userRepository.UpdateAsync(user);
+                                _logger.LogInformation($"Usuario {user.Username} desactivado localmente debido a desactivación en LDAP");
+                            }
                             break;
                         case "NOTAMEMBER":
                             errorMessage = "El usuario no pertenece al grupo requerido";
