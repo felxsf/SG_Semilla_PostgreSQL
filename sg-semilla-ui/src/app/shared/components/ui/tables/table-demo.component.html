@@ -1,0 +1,37 @@
+<div class="demo-container">
+  <h2 class="demo-title">Tabla con filtros y paginación</h2>
+  
+  <app-table-filters
+    [filters]="filters"
+    [showClearButton]="true"
+    [showApplyButton]="true"
+    [autoApply]="false"
+    (filterApply)="onFilterApply($event)"
+    (filterClear)="onFilterClear()"
+  ></app-table-filters>
+  
+  <app-table
+    [data]="displayedUsers"
+    [columns]="columns"
+    [loading]="loading"
+    [striped]="true"
+    [hoverable]="true"
+    [bordered]="false"
+    [compact]="false"
+    [sortable]="true"
+    (rowClick)="onRowClick($event)"
+    (sortChange)="onSortChange($event)"
+  ></app-table>
+  
+  <app-table-pagination
+    [currentPage]="currentPage"
+    [totalItems]="totalItems"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[5, 10, 25, 50, 100]"
+    [showPageSizeOptions]="true"
+    [showFirstLastButtons]="true"
+    [disabled]="loading"
+    (pageChange)="onPageChange($event)"
+    (pageSizeChange)="onPageSizeChange($event)"
+  ></app-table-pagination>
+</div>

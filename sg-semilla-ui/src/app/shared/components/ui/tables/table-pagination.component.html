@@ -1,0 +1,106 @@
+<div class="pagination-container">
+  <div class="pagination-info">
+    <span class="text-sm text-gray-700">
+      Mostrando
+      <span class="font-medium">{{ (currentPage - 1) * pageSize + 1 }}</span>
+      a
+      <span class="font-medium">{{ Math.min(currentPage * pageSize, totalItems) }}</span>
+      de
+      <span class="font-medium">{{ totalItems }}</span>
+      resultados
+    </span>
+  </div>
+  
+  <div class="pagination-controls">
+    @if (showPageSizeOptions) {
+      <div class="page-size-selector">
+        <select 
+          [disabled]="disabled" 
+          [value]="pageSize" 
+          (change)="onPageSizeChange($event)"
+          class="page-size-select"
+        >
+          @for (option of pageSizeOptions; track option) {
+            <option [value]="option">{{ option }} por página</option>
+          }
+        </select>
+      </div>
+    }
+    
+    <nav class="pagination-nav" aria-label="Paginación">
+      <ul class="pagination-list">
+        @if (showFirstLastButtons) {
+          <li>
+            <button 
+              type="button" 
+              [disabled]="!hasPreviousPage || disabled" 
+              (click)="onPageChange(1)"
+              class="pagination-button first"
+              [class.disabled]="!hasPreviousPage || disabled"
+              aria-label="Primera página"
+            >
+              <span class="material-icons">first_page</span>
+            </button>
+          </li>
+        }
+        
+        <li>
+          <button 
+            type="button" 
+            [disabled]="!hasPreviousPage || disabled" 
+            (click)="onPageChange(currentPage - 1)"
+            class="pagination-button prev"
+            [class.disabled]="!hasPreviousPage || disabled"
+            aria-label="Página anterior"
+          >
+            <span class="material-icons">chevron_left</span>
+          </button>
+        </li>
+        
+        @for (page of pages; track page) {
+          <li>
+            <button 
+              type="button" 
+              [disabled]="disabled" 
+              (click)="onPageChange(page)"
+              class="pagination-button page"
+              [class.active]="page === currentPage"
+              [class.disabled]="disabled"
+              aria-label="Página {{ page }}"
+            >
+              {{ page }}
+            </button>
+          </li>
+        }
+        
+        <li>
+          <button 
+            type="button" 
+            [disabled]="!hasNextPage || disabled" 
+            (click)="onPageChange(currentPage + 1)"
+            class="pagination-button next"
+            [class.disabled]="!hasNextPage || disabled"
+            aria-label="Página siguiente"
+          >
+            <span class="material-icons">chevron_right</span>
+          </button>
+        </li>
+        
+        @if (showFirstLastButtons) {
+          <li>
+            <button 
+              type="button" 
+              [disabled]="!hasNextPage || disabled" 
+              (click)="onPageChange(totalPages)"
+              class="pagination-button last"
+              [class.disabled]="!hasNextPage || disabled"
+              aria-label="Última página"
+            >
+              <span class="material-icons">last_page</span>
+            </button>
+          </li>
+        }
+      </ul>
+    </nav>
+  </div>
+</div>

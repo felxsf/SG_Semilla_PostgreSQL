@@ -1,0 +1,30 @@
+<div class="checkbox-container">
+  <div class="flex items-start">
+    <div class="flex items-center h-5">
+      <input
+        type="checkbox"
+        [id]="id"
+        [name]="name"
+        [disabled]="disabled"
+        [required]="required"
+        [class]="checkboxClasses"
+        [(ngModel)]="checked"
+        (change)="onCheckboxChange($event)"
+        (blur)="onCheckboxBlur($event)"
+        (focus)="onCheckboxFocus($event)"
+      />
+    </div>
+    <label *ngIf="label" [for]="id" [class]="labelClasses">
+      {{ label }}
+      <span *ngIf="required" class="text-red-500 ml-1">*</span>
+    </label>
+  </div>
+  
+  <div *ngIf="errorText" class="text-xs text-red-600 mt-1 ml-6">
+    {{ errorText }}
+  </div>
+  
+  <div *ngIf="!errorText && helperText" [class]="helperTextClasses">
+    {{ helperText }}
+  </div>
+</div>

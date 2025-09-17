@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+
+.checkbox-container {
+  margin-bottom: 1rem;
+}
+
+/* Estilos específicos para dispositivos móviles */
+@media (max-width: 640px) {
+  input[type="checkbox"] {
+    min-width: 18px; /* Asegura que el checkbox sea lo suficientemente grande en móviles */
+    min-height: 18px;
+  }
+  
+  label {
+    font-size: 16px; /* Texto más grande para mejor legibilidad en móviles */
+  }
+}

@@ -1,0 +1,27 @@
+// Estilos específicos para la página de demostración de tabla
+
+.container {
+  max-width: 1200px;
+}
+
+h1 {
+  color: #1f2937;
+}
+
+// Estilos para resaltar estados de productos
+:host ::ng-deep {
+  .status-available {
+    color: #10b981;
+    font-weight: 500;
+  }
+  
+  .status-low_stock {
+    color: #f59e0b;
+    font-weight: 500;
+  }
+  
+  .status-out_of_stock {
+    color: #ef4444;
+    font-weight: 500;
+  }
+}

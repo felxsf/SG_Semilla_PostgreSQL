@@ -1,0 +1,46 @@
+<aside class="bg-white shadow-md relative flex flex-col hover:shadow-lg" [class.w-20]="collapsed" [class.w-72]="!collapsed">
+  
+  <div class="p-5 flex-grow flex flex-col ">
+    <div class="font-century-gothic font-bold text-primary text-xl mb-8 flex items-center" [class.justify-center]="collapsed">
+      <span class="material-icons text-2xl" [class.mr-3]="!collapsed">eco</span>
+      <span *ngIf="!collapsed">SG Semilla</span>
+    </div>
+    
+    <nav class="space-y-2 flex-grow">
+      @for (section of menuItems; track section.label) {
+        <div class="mb-4">
+          <div 
+            (click)="toggleSection(section.label)" 
+            class="flex items-center justify-between text-gray-700 font-medium text-sm uppercase tracking-wider mb-3 px-4 py-3 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200">
+            <div class="flex items-center" [class.justify-center]="collapsed">
+              <span class="material-icons text-xl text-gray-600" [class.mr-3]="!collapsed">{{ section.icon }}</span>
+              <span *ngIf="!collapsed">{{ section.label }}</span>
+            </div>
+            <span *ngIf="!collapsed" class="material-icons text-gray-500 transition-transform duration-200"
+              [class.transform]="isSectionExpanded(section.label)" 
+              [class.rotate-180]="isSectionExpanded(section.label)">
+              expand_more
+            </span>
+          </div>
+          
+          <div 
+            class="space-y-1 overflow-hidden transition-all duration-300" 
+            [class.h-0]="!isSectionExpanded(section.label)" 
+            [class.opacity-0]="!isSectionExpanded(section.label)" 
+            [class.h-auto]="isSectionExpanded(section.label)" 
+            [class.opacity-100]="isSectionExpanded(section.label)">
+            @for (item of section.items; track item.label) {
+              <a 
+                [routerLink]="item.route" 
+                routerLinkActive="bg-primary-h/10 text-primary font-medium" 
+                class="flex items-center px-4 py-2.5 text-sm rounded-lg text-gray-700 hover:bg-primary-h/10 hover:text-primary transition-colors duration-200">
+                <span class="material-icons text-xl" [class.mr-3]="!collapsed">{{ item.icon }}</span>
+                <span *ngIf="!collapsed">{{ item.label }}</span>
+              </a>
+            }
+          </div>
+        </div>
+      }
+    </nav>
+  </div>
+</aside>

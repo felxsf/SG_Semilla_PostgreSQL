@@ -1,0 +1,104 @@
+<div class="login-container min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="login-card max-w-md w-full">
+    <div class="text-center mb-8">
+      <div class="logo-container mb-6">
+        <svg class="logo mx-auto" width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#2c5282"/>
+          <path d="M2 17L12 22L22 17" stroke="#2c5282" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 12L12 17L22 12" stroke="#2c5282" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2 class="text-center text-3xl font-extrabold text-white">SG Semilla</h2>
+      <p class="mt-2 text-center text-sm text-gray-200">
+        Inicia sesión en tu cuenta
+      </p>
+    </div>
+    
+    <div class="bg-white py-8 px-6 shadow-2xl rounded-xl">
+      <form class="space-y-6" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <!-- Mensaje de error -->
+        <div *ngIf="errorMessage" class="rounded-md bg-red-50 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-800">{{ errorMessage }}</h3>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Campo de usuario o número de documento -->
+        <div class="mb-6">
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Usuario o Número de Documento</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <input id="username" name="username" type="text" autocomplete="username" required formControlName="username" class="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary transition duration-150 ease-in-out sm:text-sm" placeholder="Ingresa tu nombre de usuario o número de documento">
+          </div>
+          <div *ngIf="loginForm.get('username')?.invalid && (loginForm.get('username')?.dirty || loginForm.get('username')?.touched)" class="text-red-500 text-xs mt-2">
+            <div *ngIf="loginForm.get('username')?.errors?.['required']">El usuario o número de documento es requerido</div>
+          </div>
+        </div>
+        
+        <!-- Campo de contraseña -->
+        <div class="mb-6">
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <input id="password" name="password" type="password" autocomplete="current-password" required formControlName="password" class="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary transition duration-150 ease-in-out sm:text-sm" placeholder="Ingresa tu contraseña">
+          </div>
+          <div *ngIf="loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)" class="text-red-500 text-xs mt-2">
+            <div *ngIf="loginForm.get('password')?.errors?.['required']">La contraseña es requerida</div>
+            <div *ngIf="loginForm.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres</div>
+          </div>
+        </div>
+        
+        <!-- Recordarme -->
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center">
+            <input id="remember-me" name="remember-me" type="checkbox" formControlName="rememberMe"
+                   class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+            <label for="remember-me" class="ml-2 block text-sm text-gray-700">Recordarme</label>
+          </div>
+          
+          <div class="text-sm">
+            <a href="#" class="font-medium text-primary hover:text-primary-dark transition duration-150 ease-in-out">¿Olvidaste tu contraseña?</a>
+          </div>
+        </div>
+        
+        <!-- Botón de inicio de sesión -->
+        <div>
+          <button type="submit" [disabled]="isSubmitting"
+                  class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition duration-150 ease-in-out"
+                  [ngClass]="{'opacity-75 cursor-not-allowed': isSubmitting}">
+            <span *ngIf="!isSubmitting">Iniciar sesión</span>
+            <span *ngIf="isSubmitting" class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Procesando...
+            </span>
+          </button>
+        </div>
+      </form>
+      
+      <!-- Enlace para registrarse -->
+      <div class="mt-6 text-center">
+        <p class="text-sm text-white">
+          ¿No tienes una cuenta? <a href="#" class="font-medium text-white hover:text-gray-200 underline transition duration-150 ease-in-out">Regístrate</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

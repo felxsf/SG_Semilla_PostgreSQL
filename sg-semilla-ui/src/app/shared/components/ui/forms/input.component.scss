@@ -1,0 +1,14 @@
+:host {
+  display: block;
+}
+
+.input-container {
+  margin-bottom: 1rem;
+}
+
+/* Estilos específicos para dispositivos móviles */
+@media (max-width: 640px) {
+  input {
+    font-size: 16px; /* Evita el zoom automático en iOS */
+  }
+}

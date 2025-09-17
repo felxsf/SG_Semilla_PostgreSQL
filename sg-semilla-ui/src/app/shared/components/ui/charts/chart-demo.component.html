@@ -1,0 +1,52 @@
+<div class="demo-container">
+  <h2 class="demo-title">Gráficas</h2>
+  
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3 class="chart-title">Gráfica de Barras</h3>
+      <app-bar-chart 
+        [data]="barChartData"
+        [title]="'Comparativa de ventas'"
+        [showLegend]="true"
+        [legendPosition]="'top'"
+        [height]="'300px'"
+      ></app-bar-chart>
+    </div>
+    
+    <div class="chart-card">
+      <h3 class="chart-title">Gráfica de Líneas</h3>
+      <app-line-chart 
+        [data]="lineChartData"
+        [title]="'Métricas de usuarios'"
+        [showLegend]="true"
+        [legendPosition]="'top'"
+        [curved]="true"
+        [filled]="true"
+        [height]="'300px'"
+      ></app-line-chart>
+    </div>
+    
+    <div class="chart-card">
+      <h3 class="chart-title">Gráfica Circular</h3>
+      <app-pie-chart 
+        [data]="pieChartData"
+        [title]="'Distribución por colores'"
+        [showLegend]="true"
+        [legendPosition]="'right'"
+        [height]="'300px'"
+      ></app-pie-chart>
+    </div>
+    
+    <div class="chart-card">
+      <h3 class="chart-title">Gráfica de Barras Horizontales</h3>
+      <app-bar-chart 
+        [data]="horizontalBarChartData"
+        [title]="'Ventas por producto'"
+        [horizontal]="true"
+        [showLegend]="true"
+        [legendPosition]="'top'"
+        [height]="'300px'"
+      ></app-bar-chart>
+    </div>
+  </div>
+</div>
