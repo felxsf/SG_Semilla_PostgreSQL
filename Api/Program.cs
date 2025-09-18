@@ -63,6 +63,29 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 			RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
 			NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
 		};
+		
+		// Configurar para aceptar tokens sin el prefijo "Bearer"
+		o.Events = new JwtBearerEvents
+		{
+			OnMessageReceived = context =>
+			{
+				var token = context.Request.Headers["Authorization"].FirstOrDefault();
+				if (!string.IsNullOrEmpty(token))
+				{
+					// Si el token ya tiene el prefijo "Bearer ", lo usamos tal como está
+					if (token.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+					{
+						context.Token = token.Substring("Bearer ".Length).Trim();
+					}
+					// Si no tiene el prefijo, asumimos que es solo el token
+					else
+					{
+						context.Token = token;
+					}
+				}
+				return Task.CompletedTask;
+			}
+		};
 	});
 
 // Autorización basada en políticas para permisos

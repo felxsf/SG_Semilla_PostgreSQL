@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Diagnostics;
 
 namespace Api.Controllers
 {
@@ -16,10 +17,12 @@ namespace Api.Controllers
 	public class TodosController : ControllerBase
 	{
 		private readonly IMediator _mediator;
+		private readonly ILogger<TodosController> _logger;
 
-		public TodosController(IMediator mediator)
+		public TodosController(IMediator mediator, ILogger<TodosController> logger)
 		{
 			_mediator = mediator;
+			_logger = logger;
 		}
 
 		/// <summary>
@@ -30,7 +33,11 @@ namespace Api.Controllers
 		[ProducesResponseType(typeof(List<TodoDto>), StatusCodes.Status200OK)]
 		public async Task<ActionResult<List<TodoDto>>> Get()
 		{
-			return await _mediator.Send(new GetTodosQuery());
+			_logger.LogInformation("Iniciando obtención de todos los todos");
+			// Punto de interrupción aquí para depuración
+			var result = await _mediator.Send(new GetTodosQuery());
+			_logger.LogInformation("Se obtuvieron {Count} todos", result.Count);
+			return result;
 		}
 
 		/// <summary>

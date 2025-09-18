@@ -99,6 +99,37 @@ namespace Api.Controllers
                 Roles = roles
             });
         }
+        
+        /// <summary>
+        /// Genera un token de prueba para desarrollo
+        /// </summary>
+        /// <returns>Token JWT para pruebas</returns>
+        [HttpGet("dev-token")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(UserLoginResponseDto), StatusCodes.Status200OK)]
+        public async Task<ActionResult<UserLoginResponseDto>> GetDevToken()
+        {
+            // Usuario de prueba para desarrollo
+            var username = "admin";
+            var roleId = 1; // Rol de administrador
+            
+            var token = await GenerateJwtToken(username, roleId);
+            var expiration = DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["Jwt:DurationInMinutes"] ?? "60"));
+            
+            return Ok(new UserLoginResponseDto
+            {
+                Token = token,
+                Expiration = expiration,
+                User = new UserDto 
+                { 
+                    Id = Guid.NewGuid(),
+                    Username = username,
+                    Email = "admin@example.com",
+                    RoleId = roleId,
+                    RoleName = "Administrator"
+                }
+            });
+        }
 
         /// <summary>
         /// Renueva un token JWT existente

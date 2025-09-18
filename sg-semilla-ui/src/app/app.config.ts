@@ -14,7 +14,7 @@ const authInterceptor = (req: any, next: any) => {
     if (token) {
       req = req.clone({
         setHeaders: {
-          Authorization: `Bearer ${token}`
+          Authorization: token  // Enviar solo el token, sin prefijo "Bearer"
         }
       });
     }

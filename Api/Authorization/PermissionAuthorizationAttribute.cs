@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.DependencyInjection;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using Api.Services;
 
 namespace Api.Authorization
@@ -18,12 +21,12 @@ namespace Api.Authorization
     public class PermissionAuthorizationFilter : IAuthorizationFilter
     {
         private readonly string _permission;
-        private readonly UserService _userService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public PermissionAuthorizationFilter(string permission, UserService userService)
+        public PermissionAuthorizationFilter(string permission, IServiceProvider serviceProvider)
         {
             _permission = permission;
-            _userService = userService;
+            _serviceProvider = serviceProvider;
         }
 
         public void OnAuthorization(AuthorizationFilterContext context)
@@ -45,8 +48,13 @@ namespace Api.Authorization
                 return;
             }
 
+            // Obtener el servicio de usuario usando DI
+            var userService = _serviceProvider.GetRequiredService<UserService>();
+            
             // Obtener los permisos del rol
-            var permissions = _userService.GetPermissionsByRole(role);
+            var permissions = Task.Run(async () => {
+                return await userService.GetPermissionsByRoleAsync(role);
+            }).Result;
 
             // Verificar si el usuario tiene el permiso requerido
             if (!permissions.Contains(_permission))

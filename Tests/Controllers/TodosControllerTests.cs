@@ -8,6 +8,7 @@ using FluentAssertions;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Unit = MediatR.Unit;
 
@@ -16,12 +17,14 @@ namespace Tests.Controllers
     public class TodosControllerTests
     {
         private readonly Mock<IMediator> _mediatorMock;
+        private readonly Mock<ILogger<TodosController>> _loggerMock;
         private readonly TodosController _controller;
 
         public TodosControllerTests()
         {
             _mediatorMock = new Mock<IMediator>();
-            _controller = new TodosController(_mediatorMock.Object);
+            _loggerMock = new Mock<ILogger<TodosController>>();
+            _controller = new TodosController(_mediatorMock.Object, _loggerMock.Object);
         }
 
         [Fact]

@@ -20,7 +20,8 @@ namespace Tests.Authentication
         {
             // Arrange
             var mediatorMock = new Mock<MediatR.IMediator>();
-            var controller = new TodosController(mediatorMock.Object);
+            var loggerMock = new Mock<ILogger<TodosController>>();
+            var controller = new TodosController(mediatorMock.Object, loggerMock.Object);
             
             // Configurar el ControllerContext para simular un usuario no autenticado
             controller.ControllerContext = new ControllerContext
@@ -37,7 +38,8 @@ namespace Tests.Authentication
         {
             // Arrange
             var mediatorMock = new Mock<MediatR.IMediator>();
-            var controller = new TodosController(mediatorMock.Object);
+            var loggerMock = new Mock<ILogger<TodosController>>();
+            var controller = new TodosController(mediatorMock.Object, loggerMock.Object);
             
             // Configurar el ControllerContext para simular un usuario autenticado
             var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]

@@ -349,6 +349,17 @@ namespace Api.Services
             
             return GetPermissionsByRoleIdAsync(role.Id).Result;
         }
+        
+        public async Task<List<string>> GetPermissionsByRoleAsync(string roleName)
+        {
+            var role = await _roleRepository.GetByNameAsync(roleName);
+            if (role == null)
+            {
+                return new List<string>();
+            }
+            
+            return await GetPermissionsByRoleIdAsync(role.Id);
+        }
 
         private (string PasswordHash, string Salt) HashPassword(string password)
         {
