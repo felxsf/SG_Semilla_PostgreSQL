@@ -3,7 +3,7 @@
 1) Resumen y alcance
 - Monorepo con API REST en .NET 8 + PostgreSQL y frontend Angular (sg-semilla-ui). 
 - Autenticación JWT, autorización por permisos, opción de autenticación LDAP. 
-- Describamos arquitectura, configuración, servicios, controladores, ejecución y despliegue.
+- Este manual describe arquitectura, configuración, servicios, controladores, ejecución y despliegue.
 
 2) Arquitectura
 - Capas backend: Domain (entidades), Application (DTOs, validaciones, mapeos, casos de uso), Infrastructure (EF Core, repositorios, seeding), Api (controladores, middleware). 
@@ -48,8 +48,16 @@
 
 3.6 Autenticación y autorización
 - JWT: firmado con Jwt:Key, incluye claims sub (userId), name, role y permissions (lista de códigos). 
-- Autorización por políticas: cada política mapea a un código de permiso (ej.: "users.read", "roles.write"). 
+- Autorización por políticas: se configuran de forma centralizada fuera de Program.cs, y cada política mapea a un código de permiso (ej.: "users.read", "roles.write"). 
 - LDAP (opcional): si Ldap:Enabled=true, se intenta autenticar en servidor configurado; puede exigirse pertenencia a Ldap:Group.
+
+3.6.1 Centralización de autenticación, autorización y Swagger
+- Políticas de autorización: Api/Authorization/AuthorizationPolicies.cs
+  - Registrar en Program.cs con: services.AddAuthorization(options => AuthorizationPolicies.Configure(options))
+- Autenticación JWT: Api/Authentication/JwtAuthenticationExtensions.cs
+  - Registrar en Program.cs con: services.AddJwtAuthentication(Configuration)
+- Swagger/OpenAPI: Api/Swagger/SwaggerExtensions.cs
+  - Registrar en Program.cs con: services.AddSwaggerDocumentation(); y app.UseSwaggerDocumentation(app.Environment)
 
 3.7 Configuración (Api/appsettings*.json)
 - ConnectionStrings: DefaultConnection (PostgreSQL). 
@@ -81,3 +89,4 @@
 - Backend: configurar ConnectionStrings en appsettings.Development.json; ejecutar: dotnet restore; dotnet run en carpeta Api (migraciones + seeding automáticos). 
 - Frontend: cd sg-semilla-ui; npm install; npm start (usa proxy a la API). 
 - Acceso: http(s)://localhost:{puertos según launchSettings}; login con admin/Admin123! (cambiar en cuanto sea posible).
+

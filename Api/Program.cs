@@ -4,11 +4,12 @@ using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using Serilog;
 using System;
 using System.Text;
 using Api.Middleware;
+using Api.Authentication;
+using Api.Swagger;
 
 // Método principal asíncrono
 return await Main(args);
@@ -50,103 +51,16 @@ builder.Services.AddCors(opt =>
 });
 
 // Auth (JWT con validación de permisos)
-var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "dev-secret-key-secure-default-2024"));
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-	.AddJwtBearer(o =>
-	{
-		o.TokenValidationParameters = new TokenValidationParameters
-		{
-			ValidateIssuer = false,
-			ValidateAudience = false,
-			ValidateIssuerSigningKey = true,
-			IssuerSigningKey = key,
-			RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
-			NameClaimType = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-		};
-		
-		// Configurar para aceptar tokens sin el prefijo "Bearer"
-		o.Events = new JwtBearerEvents
-		{
-			OnMessageReceived = context =>
-			{
-				var token = context.Request.Headers["Authorization"].FirstOrDefault();
-				if (!string.IsNullOrEmpty(token))
-				{
-					// Si el token ya tiene el prefijo "Bearer ", lo usamos tal como está
-					if (token.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
-					{
-						context.Token = token.Substring("Bearer ".Length).Trim();
-					}
-					// Si no tiene el prefijo, asumimos que es solo el token
-					else
-					{
-						context.Token = token;
-					}
-				}
-				return Task.CompletedTask;
-			}
-		};
-	});
+builder.Services.AddJwtAuthentication(builder.Configuration);
 
 // Autorización basada en políticas para permisos
 builder.Services.AddAuthorization(options =>
 {
-	// Políticas basadas en permisos para usuarios
-	options.AddPolicy("CanReadUsers", policy => policy.RequireClaim("permission", "users.read"));
-	options.AddPolicy("CanWriteUsers", policy => policy.RequireClaim("permission", "users.write"));
-	options.AddPolicy("CanDeleteUsers", policy => policy.RequireClaim("permission", "users.delete"));
-	
-	// Políticas basadas en permisos para contenido
-	options.AddPolicy("CanReadContent", policy => policy.RequireClaim("permission", "content.read"));
-	options.AddPolicy("CanWriteContent", policy => policy.RequireClaim("permission", "content.write"));
-	options.AddPolicy("CanDeleteContent", policy => policy.RequireClaim("permission", "content.delete"));
-	
-	// Políticas basadas en permisos para roles
-	options.AddPolicy("CanReadRoles", policy => policy.RequireClaim("permission", "roles.read"));
-	options.AddPolicy("CanWriteRoles", policy => policy.RequireClaim("permission", "roles.write"));
-	options.AddPolicy("CanDeleteRoles", policy => policy.RequireClaim("permission", "roles.delete"));
-	
-	// Políticas basadas en permisos para permisos
-	options.AddPolicy("CanReadPermissions", policy => policy.RequireClaim("permission", "permissions.read"));
-	options.AddPolicy("CanWritePermissions", policy => policy.RequireClaim("permission", "permissions.write"));
-	options.AddPolicy("CanDeletePermissions", policy => policy.RequireClaim("permission", "permissions.delete"));
+    Api.Authorization.AuthorizationPolicies.Configure(options);
 });
 
 // Swagger
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-	c.SwaggerDoc("v1", new OpenApiInfo { 
-		Title = "SG_Semilla API", 
-		Version = "v1",
-		Description = "API de ejemplo con Clean Architecture + CQRS"
-	});
-	
-	// Configuración para JWT en Swagger
-	c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-	{
-		Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-		Name = "Authorization",
-		In = ParameterLocation.Header,
-		Type = SecuritySchemeType.ApiKey,
-		Scheme = "Bearer"
-	});
-
-	c.AddSecurityRequirement(new OpenApiSecurityRequirement
-	{
-		{
-			new OpenApiSecurityScheme
-			{
-				Reference = new OpenApiReference
-				{
-					Type = ReferenceType.SecurityScheme,
-					Id = "Bearer"
-				}
-			},
-			new string[] { }
-		}
-	});
-});
+builder.Services.AddSwaggerDocumentation();
 
 // Health Checks
 builder.Services.AddHealthChecks();
@@ -160,8 +74,7 @@ app.UseExceptionHandling();
 
 if (app.Environment.IsDevelopment())
 {
-	app.UseSwagger();
-	app.UseSwaggerUI();
+    app.UseSwaggerDocumentation(app.Environment);
 }
 
 app.UseCors("Default");
